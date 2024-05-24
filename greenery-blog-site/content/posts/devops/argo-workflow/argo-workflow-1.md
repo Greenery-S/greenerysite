@@ -28,7 +28,7 @@ argo delete hello-world-xxx     # delete workflow
 
 You can also use `kubectl`, but you need to specify the `namespace`.
 
-# 2 Hello World
+## 2 Hello World
 
 ```yaml
 apiVersion: argoproj.io/v1alpha1
