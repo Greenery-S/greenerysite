@@ -17,7 +17,7 @@ categories:
 
 ## 1 Conditionals
 
-支持条件执行.语法是由 govaluate 实现的,它提供了对复杂语法的支持.请参见以下示例:
+Supports conditional execution. The syntax is implemented by govaluate, which provides support for complex syntax. See the following example:
 
 ```yaml
 apiVersion: argoproj.io/v1alpha1
@@ -90,7 +90,7 @@ spec:
 
 ## 2 Recursion
 
-模板之间的递归调用是允许的.请参见以下示例.这个示例会使得翻硬币直到正面朝上,才会结束.
+Recursive calls between templates are allowed. See the following example. This example will continue flipping a coin until it lands heads up.
 
 ```yaml
 apiVersion: argoproj.io/v1alpha1
@@ -128,15 +128,15 @@ spec:
       command: [sh, -c]
       args: ["echo \"it was heads\""]
 ```
-    
+
 {{<image src="/images/argo-workflow-recursion.png" alt="argo-workflow-recursion" position="center" style="border-radius: 8px;" size="100%">}}
 
-## 3 Retry失败或错误的步骤
+## 3 Retry Failed or Errored Steps
 
-可以指定一个重试策略,该策略将决定如何重试失败或错误的步骤:
+You can specify a retry strategy that determines how to retry failed or errored steps:
 
 ```yaml
-# 此示例演示了如何使用重试退避
+# This example shows how to use retry backoff
 apiVersion: argoproj.io/v1alpha1
 kind: Workflow
 metadata:
@@ -149,36 +149,35 @@ spec:
       limit: 10
       retryPolicy: "Always"
       backoff:
-        duration: "1"      # 必须是字符串。默认单位是秒。也可以是持续时间，例如："2m", "6h", "1d"
+        duration: "1"      # Must be a string. The default unit is seconds. It can also be a duration like "2m", "6h", "1d"
         factor: 2
-        maxDuration: "1m"  # 必须是字符串。默认单位是秒。也可以是持续时间，例如："2m", "6h", "1d"
+        maxDuration: "1m"  # Must be a string. The default unit is seconds. It can also be a duration like "2m", "6h", "1d"
       affinity:
         nodeAntiAffinity: {}
     container:
       image: python:alpine3.6
       command: ["python", -c]
-      # 有66%的概率失败
+      # Has a 66% chance to fail
       args: ["import random; import sys; exit_code = random.choice([0, 1, 1]); sys.exit(exit_code)"]
 ```
 
-- `limit` 是容器将被重试的最大次数.
-- `retryPolicy` 指定容器在失败,错误,两者都有或仅在瞬态错误(例如 i/o 或 TLS 握手超时)时是否会被重试."Always" 在错误和失败时都会重试.也可用:OnFailure(默认),"OnError",和 "OnTransientError"(在 v3.0.0-rc2 之后可用).
-- `backoff` 是一个指数退避
-- `nodeAntiAffinity` 防止在同一主机上运行步骤.当前实现只允许空的 nodeAntiAffinity(即 nodeAntiAffinity: {}),并且默认使用标签 kubernetes.io/hostname 作为选择器.
+- `limit` is the maximum number of times the container will be retried.
+- `retryPolicy` specifies whether the container will be retried on failure, error, both, or only on transient errors (e.g., I/O or TLS handshake timeout). "Always" retries on both error and failure. Other options are: OnFailure (default), "OnError", and "OnTransientError" (available after v3.0.0-rc2).
+- `backoff` is an exponential backoff.
+- `nodeAntiAffinity` prevents steps from running on the same host. The current implementation only allows an empty nodeAntiAffinity (i.e., nodeAntiAffinity: {}), and by default, uses the label kubernetes.io/hostname as the selector.
 
-提供一个空的重试策略(即 retryStrategy::{})将导致容器重试直到完成.
+Providing an empty retry strategy (i.e., retryStrategy::{}) will cause the container to retry until it completes.
 
+## 4 Exit Handlers
 
-## 4 Exit handlers
+Exit handlers are templates that are always executed at the end of a workflow, regardless of success or failure.
 
-退出处理器是一个始终在工作流结束时执行的模板，无论成功还是失败。
+Common uses of exit handlers include:
 
-退出处理器的一些常见用途包括：
-
-- 在工作流运行后进行清理
-- 发送工作流状态通知（例如，电子邮件/Slack）
-- 将通过/失败状态发布到web-hook结果（例如，GitHub构建结果）
-- 重新提交或提交另一个工作流
+- Cleaning up after the workflow runs
+- Sending workflow status notifications (e.g., email/Slack)
+- Posting pass/fail status to web-hook results (e.g., GitHub build results)
+- Resubmitting or submitting another workflow
 
 ```yaml
 apiVersion: argoproj.io/v1alpha1
@@ -226,12 +225,12 @@ spec:
       command: [sh, -c]
       args: ["echo boohoo!"]
 ```
-    
+
 {{<image src="/images/argo-workflow-exit-handlers.png" alt="argo-workflow-exit-handlers" position="center" style="border-radius: 8px;" size="60%">}}
 
 ## 5 Timeouts
 
-您可以使用字段 `activeDeadlineSeconds` 来限制工作流的运行时间:
+You can use the `activeDeadlineSeconds` field to limit the runtime of a workflow:
 
 ```yaml
 apiVersion: argoproj.io/v1alpha1
@@ -239,7 +238,7 @@ kind: Workflow
 metadata:
   generateName: timeouts-wf-
 spec:
-  activeDeadlineSeconds: 10 # 在10秒后终止工作流
+  activeDeadlineSeconds: 10 # Terminate the workflow after 10 seconds
   entrypoint: sleep
   templates:
   - name: sleep
@@ -249,7 +248,7 @@ spec:
       args: ["echo sleeping for 1m; sleep 60; echo done"]
 ```
 
-您也可以限制特定模板的运行时间:
+You can also limit the runtime of a specific template:
 
 ```yaml
 apiVersion: argoproj.io/v1alpha1
@@ -260,7 +259,7 @@ spec:
   entrypoint: sleep
   templates:
   - name: sleep
-    activeDeadlineSeconds: 10 # 在10秒后终止容器模板
+    activeDeadlineSeconds: 10 # Terminate the container template after 10 seconds
     container:
       image: alpine:latest
       command: [sh, -c]
@@ -269,13 +268,13 @@ spec:
 
 ## 6 Suspending
 
-工作流可以通过以下方式挂起:
+Workflows can be suspended in the following ways:
 
 ```sh
 argo suspend WORKFLOW
 ```
 
-或者在工作流中指定一个挂起步骤:
+Or by specifying a suspend step within the workflow:
 
 ```yaml
 apiVersion: argoproj.io/v1alpha1
@@ -309,7 +308,7 @@ spec:
 
   - name: delay
     suspend:
-      duration: "20"    # 必须是字符串。默认单位是秒。也可以是持续时间，例如："2m", "6h"
+      duration: "20"    # Must be a string. The default unit is seconds. It can also be a duration like "2m", "6h"
 
   - name: argosay
     inputs:
@@ -321,13 +320,13 @@ spec:
       args: [ "echo" ,"{{inputs.parameters.message}}" ]
 ```
 
-一旦挂起,工作流将不会安排任何新的步骤,直到它被恢复.它可以通过以下方式手动恢复:
+Once suspended, the workflow will not schedule any new steps until it is resumed. It can be manually resumed in the following way:
 
 ```sh
 argo resume WORKFLOW
 ```
 
-或者像上面的例子那样,通过设置一个持续时间限制来自动恢复.
+Or automatically resumed by setting a duration limit, as in the example above.
 
 {{<image src="/images/argo-workflow-suspending.png" alt="argo-workflow-suspending" position="center" style="border-radius: 8px;" size="60%">}}
 ```sh
