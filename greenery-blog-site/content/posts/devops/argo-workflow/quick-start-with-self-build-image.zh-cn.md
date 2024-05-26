@@ -26,6 +26,7 @@ categories:
 ```sh
 brew install minikube
 minikube start
+minikube dashboard
 ```
 ## 2 下载argo workflow
 

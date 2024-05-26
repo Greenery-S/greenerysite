@@ -26,6 +26,7 @@ Create a local k8s cluster using miniKube for testing convenience.
 ```sh
 brew install minikube
 minikube start
+minikube dashboard
 ```
 
 ## 2 Download Argo Workflow
