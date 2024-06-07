@@ -1,11 +1,15 @@
 ---
 title: "Why Open This Series"
 date: 2024-06-07T17:37:02+08:00
-draft: true
+draft: false
 toc: false
 images:
 tags:
-  - untagged
+  - go
+  - design-pattern
+categories:
+  - go
+  - go-design-pattern
 ---
 
 # 为什么开启设计模式系列
@@ -19,7 +23,7 @@ tags:
   - 是极客时间[设计模式之美](https://time.geekbang.org/column/intro/100039001?utm_campaign=geektime_search&utm_content=geektime_search&utm_medium=geektime_search&utm_source=geektime_search&utm_term=geektime_search&tab=intro)的笔记, 我觉得不需要买这个,因为他是java的
   - 这个有博客讲解的,比较推荐.
 - https://github.com/senghoo/golang-design-pattern :
-  - 这是<研磨设计模式>的go实现, 比较推荐.
+  - 这是<研磨设计模式>的go实现, 比较推荐. 来源:https://www.javaweb.shop/
   
 
 
